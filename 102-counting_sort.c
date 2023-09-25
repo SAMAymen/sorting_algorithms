@@ -7,16 +7,16 @@
  *
  * Return: The maximum integer in the array.
  */
-int get_max(int *array, size_t size)
+int get_max(int *array, int size)
 {
-	int max = array[0];
-	size_t i;
+	int max, i;
 
-	for (i = 1; i < size; i++)
+	for (max = array[0], i = 1; i < size; i++)
 	{
 		if (array[i] > max)
 			max = array[i];
 	}
+
 	return (max);
 }
 
@@ -30,43 +30,39 @@ int get_max(int *array, size_t size)
  */
 void counting_sort(int *array, size_t size)
 {
-	size_t max;
-	int *count, *sorted;
-	size_t i;
+	int *count, *sorted, max, i;
 
 	if (array == NULL || size < 2)
 		return;
 
+	sorted = malloc(sizeof(int) * size);
+	if (sorted == NULL)
+		return;
 	max = get_max(array, size);
 	count = malloc(sizeof(int) * (max + 1));
-	sorted = malloc(sizeof(int) * size);
-	if (count == NULL || sorted == NULL)
+	if (count == NULL)
 	{
-		free(count);
 		free(sorted);
 		return;
 	}
 
 	for (i = 0; i < (max + 1); i++)
 		count[i] = 0;
-
-	for (i = 0; i < size; i++)
-		count[array[i]]++;
-
-	for (i = 1; i < (max + 1); i++)
+	for (i = 0; i < (int)size; i++)
+		count[array[i]] += 1;
+	for (i = 0; i < (max + 1); i++)
 		count[i] += count[i - 1];
-
-	for (i = 0; i < size; i++)
-	{
-		sorted[count[array[i]] - 1] = array[i];
-		count[array[i]]--;
-	}
-
-	for (i = 0; i < size; i++)
-		array[i] = sorted[i];
-
 	print_array(count, max + 1);
 
-	free(count);
+	for (i = 0; i < (int)size; i++)
+	{
+		sorted[count[array[i]] - 1] = array[i];
+		count[array[i]] -= 1;
+	}
+
+	for (i = 0; i < (int)size; i++)
+		array[i] = sorted[i];
+
 	free(sorted);
+	free(count);
 }
